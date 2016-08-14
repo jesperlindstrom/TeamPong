@@ -3,7 +3,20 @@ var proxy = new (function() {
   socket.emit('isGame', '1');
   socket.on('disconnect', function() {
     alert('Disconnected. Are you already running the game?');
+    reset();
+    $('canvas').hide();
+    window.location.reload(true);
   });
+
+  socket.on('reset', function() {
+    socket.emit('isGame', '1');
+    reset();
+    window.manuallyStopped = true;
+    clearInterval(window.startInterval);
+    window.startInterval = false;
+  });
+
+  socket.on('togglePause', togglePause);
   
   var $team1 = $('#team1');
   var $team2 = $('#team2');
@@ -101,11 +114,15 @@ var proxy = new (function() {
   };
 });
 
+function togglePause() {
+  isGameStarted = false;
+  window.manuallyStopped = !window.manuallyStopped;
+  clearInterval(window.startInterval);
+  window.startInterval = false;
+}
+
 $(document).on('keydown', function(e) {
   if (e.keyCode == 32) {
-    isGameStarted = false;
-    window.manuallyStopped = !window.manuallyStopped;
-    clearInterval(window.startInterval);
-    window.startInterval = false;
+    togglePause();
   }
 });

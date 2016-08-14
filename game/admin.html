@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>TeamPong</title>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style type="text/css">
+      body { margin: 30px; }
+      .container-small {
+        margin: auto;
+        max-width: 400px;
+      }
+      </style>
+  </head>
+  <body>
+    <div class="container-small">
+      <h1>TeamPong admin</h1>
+      <div style="height: 30px;"></div>
+      <a class="btn btn-lg btn-success btn-block" href="javascript:void(0)" onclick="togglePause(this)">Resume / Pause</a>
+      <div style="height: 30px;"></div>
+      <a class="btn btn-lg btn-danger btn-block" href="javascript:void(0)" onclick="reset(this)">Reset game</a>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+      function reset(btn) {
+        $(btn).attr('disabled', 'disabled');
+
+        $.get('/reset', function() {
+          $(btn).removeAttr('disabled');
+        })
+      }
+
+      function togglePause(btn) {
+        $(btn).attr('disabled', 'disabled');
+
+        $.get('/togglePause', function() {
+          $(btn).removeAttr('disabled');
+        })
+      }
+    </script>
+  </body>
+</html>

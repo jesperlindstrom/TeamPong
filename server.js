@@ -9,19 +9,16 @@ server.listen(port, function() {
 	console.log('http listening on ' + port);
 });
 
-var keys = {
-  P1: {
-    UP: 87,
-    DOWN: 83
-  },
-  P2: {
-    UP: 38,
-    DOWN: 40
-  },
-};
+app.get('/reset', function(req, res) {
+	res.send('ok');
+	io.emit('reset');
+	gameSocket = false;
+});
 
-var keyP1 = false;
-var keyP2 = false;
+app.get('/togglePause', function(req, res) {
+	res.send('ok');
+	gameSocket.emit('togglePause');
+});
 
 var votes = [
 	{
@@ -66,9 +63,6 @@ function handleGame(socket) {
 	console.log('game connected');
 
 	gameSocket = socket;
-
-	emitTeamCount(0);
-	emitTeamCount(1);
 
 	socket.on('disconnect', function() {
 		console.log('game disconnected');
