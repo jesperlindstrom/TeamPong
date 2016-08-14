@@ -30,6 +30,6 @@ var render = function () {
 
   // Initial text
   if (!isGameStarted) {
-    ctx.fillText("Press spacebar to start", 200, canvas.height / 2);
+    ctx.fillText("Press spacebar to start", 200, canvas.height / 2 + 50);
   }
 };

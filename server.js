@@ -22,19 +22,56 @@ var keys = {
 
 var players = [0, 0];
 
-var p1Action = false;
-var p1Votes = {
-	up: 0,
-	down: 0,
-	none: 0
+var keyP1 = false;
+var keyP2 = false;
+
+var votes = [
+	{
+		up: 0,
+		down: 0,
+		none: 0
+	},
+	{
+		up: 0,
+		down: 0,
+		none: 0
+	}
+];
+
+function getActionFromVotes(votes) {
+	console.log(votes);
+	var max = 0;
+	var maxAction = ['none'];
+
+	for (action in votes) {
+		if (votes[action] > max) {
+			maxAction = [action];
+			max = votes[action];
+		} else if (votes[action] == max) {
+			maxAction.push(action);
+		}
+	}
+
+	// Has to be one winner, else it returns none
+	if (maxAction.length == 1) {
+		return maxAction[0];
+	}
+
+	return 'none';
 };
 
-var p2Action = false;
-var p2Votes = {
-	up: 0,
-	down: 0,
-	none: 0
-};
+setInterval(function() {
+	var actions = [
+		getActionFromVotes(votes[0]),
+		getActionFromVotes(votes[1])
+	];
+
+	console.log(actions);
+
+	if (gameSocket) {
+		gameSocket.emit('tick', actions);
+	}
+}, 300);
 
 io.on('connection', function(socket){
   socket.on('isGame', function(value) {
@@ -82,10 +119,35 @@ function handlePlayer(socket, team) {
 
 	emitTeamCount(team);
 
+	var lastAction = false;
+
 	socket.on('disconnect', function() {
 		players[team]--;
+
+		if (lastAction != false) {
+			votes[team][lastAction]--;
+		}
+
 		console.log('player disconnected');
 
 		emitTeamCount(team);
+	});
+
+	socket.on('control', function(value) {
+		if (lastAction != false) {
+			votes[team][lastAction]--;
+		}
+
+		var action = false;
+		if (value == false) {
+			action = 'none';
+		} else if (['up', 'down'].indexOf(value) != -1) {
+			action = value;
+		} else {
+			return;
+		}
+
+		votes[team][action]++;
+		lastAction = action;
 	});
 }

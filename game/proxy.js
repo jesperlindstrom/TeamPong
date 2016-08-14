@@ -17,28 +17,35 @@ var proxy = new (function() {
     }
   });
 
+  function actionToKeyCode(team, action) {
+    if (team == 0) {
+      if (action == 'up')
+        return 87;
+
+      if (action == 'down')
+        return 83;
+
+      return false;
+    }
+
+    if (team == 1) {
+      if (action == 'up')
+        return 38;
+
+      if (action == 'down')
+        return 40;
+
+      return false;
+    }
+  }
+
   var pressedKeys = [];
 
-  socket.on('keydown', function(keyCode) {
-    console.log('keyDown', keyCode);
-    
-    if (!(keyCode in pressedKeys)) {
-      pressedKeyspush(keyCode);
-    }
-
-    console.log(pressedKeys);
-  });
-
-  socket.on('keyup', function(keyCode) {
-    console.log('keyUp', keyCode);
-
-    var index = pressedKeys.indexOf(keyCode);
-
-    if (index != -1) {
-      pressedKeys.splice(index, 1);
-    }
-
-    console.log(pressedKeys);
+  socket.on('tick', function(actions) {
+    pressedKeys = [
+      actionToKeyCode(0, actions[0]),
+      actionToKeyCode(1, actions[1])
+    ];
   });
 
   this.isDown = function(keyCode) {
