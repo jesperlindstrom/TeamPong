@@ -4,6 +4,18 @@ var proxy = new (function() {
   socket.on('disconnect', function() {
     alert('Disconnected. Are you already running the game?');
   });
+  
+  var $team1 = $('#team1');
+  var $team2 = $('#team2');
+
+  socket.on('playerCountTeam', function(data) {
+    console.log(data);
+    if (data.team == 0) {
+      $team1.html(data.count);
+    } else if (data.team == 1) {
+      $team2.html(data.count);
+    }
+  });
 
   var pressedKeys = [];
 

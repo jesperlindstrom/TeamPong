@@ -58,25 +58,34 @@ function handleGame(socket) {
 
 	gameSocket = socket;
 
+	emitTeamCount(0);
+	emitTeamCount(1);
+
 	socket.on('disconnect', function() {
 		console.log('game disconnected');
 		gameSocket = false;
 	});
 }
 
+function emitTeamCount(team) {
+	if (!gameSocket) return;
+
+	gameSocket.emit('playerCountTeam', {
+		team: team,
+		count: players[team]
+	});
+}
+
 function handlePlayer(socket, team) {
 	players[team]++;
-	console.log('player connected');
+	console.log('player connected to team ' + (team+1) + ' (' + players[team] + ' total)');
 
-	if (gameSocket) {
-		gameSocket.emit('playerCountTeam', {
-			team: team,
-			count: players[team]
-		});
-	}
+	emitTeamCount(team);
 
 	socket.on('disconnect', function() {
 		players[team]--;
 		console.log('player disconnected');
+
+		emitTeamCount(team);
 	});
 }
