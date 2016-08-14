@@ -38,40 +38,14 @@ var votes = [
 	}
 ];
 
-function getActionFromVotes(votes) {
-	console.log(votes);
-	var max = 0;
-	var maxAction = ['none'];
-
-	for (action in votes) {
-		if (votes[action] > max) {
-			maxAction = [action];
-			max = votes[action];
-		} else if (votes[action] == max) {
-			maxAction.push(action);
-		}
-	}
-
-	// Has to be one winner, else it returns none
-	if (maxAction.length == 1) {
-		return maxAction[0];
-	}
-
-	return 'none';
-};
-
 setInterval(function() {
-	var actions = [
-		getActionFromVotes(votes[0]),
-		getActionFromVotes(votes[1])
-	];
-
-	console.log(actions);
-
 	if (gameSocket) {
-		gameSocket.emit('tick', actions);
+		gameSocket.emit('tick', [
+			votes[0],
+			votes[1]
+		]);
 	}
-}, 300);
+}, 100);
 
 io.on('connection', function(socket){
   socket.on('isGame', function(value) {

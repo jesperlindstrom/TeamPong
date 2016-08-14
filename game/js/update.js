@@ -1,10 +1,5 @@
 // Update game objects
 var update = function (modifier) {
-
-  if (32 in keysDown) { // Start the game with the spacebar
-    isGameStarted = true;
-  }
-
   if (!isGameStarted) {
     return false;
   }

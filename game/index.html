@@ -12,7 +12,7 @@
       }
       canvas {
         display: block;
-        width: 100%;
+        width: 90%;
         margin: auto;
         position: absolute;
         top:0;right:0;left:0;
@@ -48,15 +48,35 @@
       .playerCount:first-child {
         border-top-right-radius: 50px;
       }
+
+      .winning-action {
+        color: green;
+      }
+
+      .players {
+        font-size: 20px;
+        margin-top: 10px;
+        color: #666;
+      }
     </style>
     <div id="overlay">
       <div class="playerCount">
         <h2>Team 1</h2>
-        <span id="team1">0</span> players
+        <div class="stats">
+          <span><i class="fa fa-caret-up"></i> <span id="stats-up1"></span></span>
+          <span><i class="fa fa-minus"></i> <span id="stats-none1"></span></span>
+          <span><i class="fa fa-caret-down"></i> <span id="stats-down1"></span></span>
+        </div>
+        <div class="players"><span id="team1">0</span> players</div>
       </div>
       <div class="playerCount">
         <h2>Team 2</h2>
-        <span id="team1">0</span> players
+        <div class="stats">
+          <span><i class="fa fa-caret-up"></i> <span id="stats-up2"></span></span>
+          <span><i class="fa fa-minus"></i> <span id="stats-none2"></span></span>
+          <span><i class="fa fa-caret-down"></i> <span id="stats-down2"></span></span>
+        </div>
+        <div class="players"><span id="team1">0</span> players</div>
       </div>
     </div>
 
@@ -71,6 +91,7 @@
     <script src="js/update.js"></script>
     <script src="js/render.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://use.fontawesome.com/9eb3217e79.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="proxy.js"></script>

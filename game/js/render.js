@@ -30,6 +30,26 @@ var render = function () {
 
   // Initial text
   if (!isGameStarted) {
-    ctx.fillText("Press spacebar to start", 200, canvas.height / 2 + 50);
+    if (!window.startInterval && !window.manuallyStopped) {
+      window.startWhenZero = 5;
+      window.startInterval = setInterval(function() {
+        window.startWhenZero--;
+
+        if (window.startWhenZero == 0) {
+          clearInterval(window.startInterval);
+          window.startInterval = false;
+          isGameStarted = true;
+        }
+
+      }, 1000);
+    }
+
+    if (window.manuallyStopped) {
+      ctx.fillText("Paused", 320, canvas.height / 2 + 50);
+      ctx.fillText("Press space to resume", 200, canvas.height / 2 + 100);
+    } else {
+      ctx.fillText("Starting in " + window.startWhenZero, 270, canvas.height / 2 + 50);
+      ctx.fillText("Press space to pause", 200, canvas.height / 2 + 100);
+    }
   }
 };
