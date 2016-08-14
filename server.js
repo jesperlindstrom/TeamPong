@@ -20,8 +20,6 @@ var keys = {
   },
 };
 
-var players = [0, 0];
-
 var keyP1 = false;
 var keyP2 = false;
 
@@ -78,33 +76,15 @@ function handleGame(socket) {
 	});
 }
 
-function emitTeamCount(team) {
-	if (!gameSocket) return;
-
-	gameSocket.emit('playerCountTeam', {
-		team: team,
-		count: players[team]
-	});
-}
-
 function handlePlayer(socket, team) {
-	players[team]++;
-	console.log('player connected to team ' + (team+1) + ' (' + players[team] + ' total)');
-
-	emitTeamCount(team);
+	console.log('player connected to team ' + (team+1));
 
 	var lastAction = false;
 
 	socket.on('disconnect', function() {
-		players[team]--;
-
 		if (lastAction != false) {
 			votes[team][lastAction]--;
 		}
-
-		console.log('player disconnected');
-
-		emitTeamCount(team);
 	});
 
 	socket.on('control', function(value) {
