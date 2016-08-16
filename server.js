@@ -2,13 +2,20 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var bodyParser = require('body-parser');
 var port = 8000;
 
 app.use('/', express.static(__dirname + '/'));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
 server.listen(port, function() {
   console.log('http listening on ' + port);
 });
 
+var teams = ['Team 1', 'Team 2'];
+var activeTeams = [0, 1];
 var gameSockets = [];
 var votes = [
 {
@@ -23,10 +30,26 @@ var votes = [
 }
 ];
 
-app.get('/reset', function(req, res) {
+app.post('/setTeams', function(req, res) {
+  teams = req.body.teams;
   res.send('ok');
+});
+
+app.post('/setActiveTeams', function(req, res) {
+  activeTeams = req.body.activeTeams;
+  res.send('ok');
+});
+
+app.get('/getTeams', function(req, res) {
+  res.send(JSON.stringify({
+    teams: teams,
+    activeTeams: activeTeams
+  }));
+});
+
+app.get('/reset', function(req, res) {
   io.emit('reset');
-  gameSockets = [];
+  res.send('ok');
 });
 
 function emitAll(sockets, k, v) {

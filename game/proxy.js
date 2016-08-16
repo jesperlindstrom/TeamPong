@@ -2,14 +2,13 @@ var proxy = new (function() {
   var socket = io();
   socket.emit('isGame', '1');
   socket.on('disconnect', function() {
-    alert('Disconnected. Are you already running the game?');
+    alert('Disconnected');
     reset();
     $('canvas').hide();
     window.location.reload(true);
   });
 
   socket.on('reset', function() {
-    socket.emit('isGame', '1');
     reset();
     window.manuallyStopped = true;
     clearInterval(window.startInterval);
