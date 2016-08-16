@@ -124,6 +124,17 @@ var proxy = new (function() {
 
   function handleTick(team, votes) {
     var action = getActionFromVotes(votes);
+    var sum = votes.up + votes.none + votes.down;
+    var percentage;
+
+
+    var percentage = sum ? votes[action] / sum : 0;
+
+    if (team == activeTeams[0]) {
+      p1.speed = percentage * 500;
+    } else if (team == activeTeams[1]) {
+      p2.speed = percentage * 500;
+    }
 
     if (action != 'none') {
       var key = actionToKeyCode(team, action);
