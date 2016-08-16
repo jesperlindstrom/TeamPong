@@ -30,13 +30,38 @@ var votes = [
 }
 ];
 
+function resetVotes() {
+  var oldVotes = votes;
+
+  votes = [];
+
+  for (i in teams) {
+    votes[i] = oldVotes[i] || { up: 0, down: 0, none: 0 };
+  }
+}
+
 app.post('/setTeams', function(req, res) {
   teams = req.body.teams;
+  io.emit('teams', teams);
+
+  resetVotes();
+
   res.send('ok');
 });
 
 app.post('/setActiveTeams', function(req, res) {
-  activeTeams = req.body.activeTeams;
+
+  var activeTeamsInt = [];
+
+  for (i in req.body.activeTeams) {
+    activeTeamsInt.push(parseInt(req.body.activeTeams[i]));
+  }
+
+  activeTeams = activeTeamsInt;
+  io.emit('activeTeams', activeTeams);
+
+  resetVotes();
+
   res.send('ok');
 });
 
@@ -66,13 +91,15 @@ app.get('/togglePause', function(req, res) {
 setInterval(function() {
   if (gameSockets.length) {
     emitAll(gameSockets, 'tick', [
-      votes[0],
-      votes[1]
+      votes[activeTeams[0]],
+      votes[activeTeams[1]]
     ]);
   }
 }, 100);
 
 io.on('connection', function(socket){
+  socket.emit('teams', teams);
+
   socket.on('isGame', function(value) {
     handleGame(socket);
   });
@@ -85,6 +112,7 @@ io.on('connection', function(socket){
 function handleGame(socket) {
   console.log('game connected');
 
+  socket.emit('activeTeams', activeTeams);
   gameSockets.push(socket);
 
   socket.on('disconnect', function() {
@@ -96,6 +124,7 @@ function handleGame(socket) {
 
 function handlePlayer(socket, team) {
   console.log('player connected to team ' + (team+1));
+  socket.emit('activeTeams', activeTeams);
 
   var lastAction = false;
 

@@ -28,11 +28,13 @@
 				top: 0;
 				width: 100%;
 				box-sizing: border-box;
+				border-bottom: 10px solid #fff;
 			}
+
 
 			.button:last-child {
 				top: 50%;
-				border-top: 10px solid #fff;
+				border-bottom: none;
 			}
 
 			.bottom {
@@ -52,20 +54,36 @@
 				background-color: green;
 				color: #fff;
 			}
+
+			.button-small {
+				font-size: 24px;
+				position: relative;
+				top: auto;
+				left: auto;
+				right: auto;
+				bottom: auto;
+				height: auto;
+				padding: 20px;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="team">
-			<a class="button" href="javascript:void(0)" onclick="selectTeam(0)"><div>Lag 1</div></a>
-			<a class="button" href="javascript:void(0)" onclick="selectTeam(1)"><div>Lag 2</div></a>
+			<div style="padding: 20px; text-align: center;">Loading teams...</div>
 		</div>
 
 		<div id="play" style="display: none;">
-			<div class="button" id="up">
-				<div><i class="fa fa-caret-up"></i></div>
+			<div id="play-controls" style="display: none;">
+				<div class="button" id="up">
+					<div><i class="fa fa-caret-up"></i></div>
+				</div>
+				<div class="button" id="down">
+					<div><i class="fa fa-caret-down"></i></div>
+				</div>
 			</div>
-			<div class="button" id="down">
-				<div><i class="fa fa-caret-down"></i></div>
+
+			<div id="play-waiting">
+				<div style="padding: 20px; text-align: center;">Waiting for your team to play...</div>
 			</div>
 		</div>
 
@@ -75,6 +93,15 @@
 		<script>
 			var socket = io();
 			var isReset = false;
+			var myTeam = false;
+
+			socket.on('teams', function(teams) {
+				var $team = $('#team');
+				$team.html('');
+				teams.forEach(function(name, i) {
+					$team.append('<a class="button button-small" href="javascript:void(0)" onclick="selectTeam(' + i + ')">' + name + '</a>')
+				});
+			});
 
 			socket.on('disconnect', function() {
 				if (!isReset) {
@@ -89,9 +116,25 @@
 				window.location.reload(true);
 			});
 
+			socket.on('activeTeams', function(activeTeams) {
+				console.log(activeTeams);
+				console.log(myTeam);
+				
+				if (myTeam === false) {
+					return;
+				}
+
+				if (activeTeams.indexOf(myTeam) != -1) {
+					$('#play-controls').show();
+				} else {
+					$('#play-waiting').show();
+				}
+			})
+
   			function selectTeam(team) {
   				$('#team').hide();
   				$('#play').show();
+  				myTeam = team;
   				socket.emit('isPlayer', team);
   				socket.emit('control', false);
   			}

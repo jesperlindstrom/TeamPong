@@ -6,6 +6,8 @@ var proxy = new (function() {
     reset();
     $('canvas').hide();
     window.location.reload(true);
+    p1.score = 0;
+    p2.score = 0;
   });
 
   socket.on('reset', function() {
@@ -13,6 +15,32 @@ var proxy = new (function() {
     window.manuallyStopped = true;
     clearInterval(window.startInterval);
     window.startInterval = false;
+    p1.score = 0;
+    p2.score = 0;
+  });
+
+  var teamNames = ['team 1', 'team 2'];
+  var activeTeams = [0, 1];
+
+  function updateTeamNames() {
+    $('#left-name').html(teamNames[activeTeams[0]]);
+    $('#right-name').html(teamNames[activeTeams[1]]);
+  }
+
+  socket.on('teams', function(names) {
+    teamNames = names;
+    updateTeamNames();
+  });
+
+  socket.on('activeTeams', function(active) {
+    activeTeams = active;
+    updateTeamNames();
+    reset();
+    window.manuallyStopped = true;
+    clearInterval(window.startInterval);
+    window.startInterval = false;
+    p1.score = 0;
+    p2.score = 0;
   });
 
   socket.on('togglePause', togglePause);
