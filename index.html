@@ -167,6 +167,10 @@
   			var current = false;
 
   			$('#up, #down').on('tapstart', function(e) {
+  				if (current != e.delegateTarget.id) {
+  					$('.active').removeClass('active');
+  				}
+  				
   				$(e.delegateTarget).addClass('active');
   				e.preventDefault();
 
@@ -175,13 +179,7 @@
   			});
 
   			$('#up, #down').on('tapend', function(e) {
-				$(e.delegateTarget).removeClass('active');
 				e.preventDefault();
-
-				/*if (e.delegateTarget.id == current) {
-  					current = false;
-  					socket.emit('control', false);
-				}*/
   			});
 		</script>
 	</body>

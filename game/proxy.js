@@ -127,16 +127,17 @@ var proxy = new (function() {
     var sum = votes.up + votes.none + votes.down;
     var percentage;
 
-
-    var percentage = sum ? votes[action] / sum : 0;
-
-    if (team == activeTeams[0]) {
-      p1.speed = percentage * 500;
-    } else if (team == activeTeams[1]) {
-      p2.speed = percentage * 500;
-    }
-
     if (action != 'none') {
+      var sum = votes.up + votes.down + votes.none;
+      var percentage = sum ? votes[action] / sum - 0.5 : 0;
+      console.log(percentage);
+      if (team == activeTeams[0]) {
+        p1.speed = percentage * 1000;
+        console.log(p1.speed);
+      } else if (team == activeTeams[1]) {
+        p2.speed = percentage * 1000;
+      }
+
       var key = actionToKeyCode(team, action);
       pressedKeys.push(key)
     }
