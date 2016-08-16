@@ -136,17 +136,16 @@
 				window.location.reload(true);
 			});
 
-			socket.on('activeTeams', function(activeTeams) {
-				console.log(activeTeams);
-				console.log(myTeam);
-				
+			socket.on('activeTeams', function(activeTeams) {				
 				if (myTeam === false) {
 					return;
 				}
 
 				if (activeTeams.indexOf(myTeam) != -1) {
+					$('#play-waiting').hide();
 					$('#play-controls').show();
 				} else {
+					$('#play-controls').hide();
 					$('#play-waiting').show();
 				}
 			})
