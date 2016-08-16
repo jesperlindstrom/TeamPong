@@ -95,6 +95,18 @@
 			var isReset = false;
 			var myTeam = false;
 
+			if (localStorage.team !== undefined) {
+				$('#team').hide();
+				$('#play').show();
+
+				myTeam = parseInt(localStorage.team);
+
+				socket.on('connect', function() {
+					socket.emit('isPlayer', myTeam);
+					socket.emit('control', false);
+				});
+			}
+
 			socket.on('teams', function(teams) {
 				var $team = $('#team');
 				$team.html('');
@@ -104,15 +116,23 @@
 			});
 
 			socket.on('disconnect', function() {
+				delete localStorage.team;
 				if (!isReset) {
 					alert('Disconnected. Please try again.');
 				}
 			});
 
 			socket.on('reset', function() {
+				delete localStorage.team;
 				alert('Server reset. Thanks for playing!');
 				isReset = true;
 				socket.disconnect();
+				window.location.reload(true);
+			});
+
+			socket.on('invalidTeam', function() {
+				delete localStorage.team;
+				alert('Invalid team data stored. Refreshing...');
 				window.location.reload(true);
 			});
 
@@ -132,9 +152,15 @@
 			})
 
   			function selectTeam(team) {
+  				if (localStorage.team) {
+  					alert('You can\'t change team now');
+  					return;
+  				}
+
   				$('#team').hide();
   				$('#play').show();
   				myTeam = team;
+  				localStorage.team = team;
   				socket.emit('isPlayer', team);
   				socket.emit('control', false);
   			}
@@ -146,7 +172,6 @@
   				e.preventDefault();
 
   				current = e.delegateTarget.id;
-
   				socket.emit('control', current);
   			});
 

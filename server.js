@@ -126,15 +126,36 @@ function handlePlayer(socket, team) {
   console.log('player connected to team ' + (team+1));
   socket.emit('activeTeams', activeTeams);
 
+  function checkTeamValidity() {
+    if (!votes[team]) {
+      socket.emit('invalidTeam');
+      return false;
+    }
+
+    return true;
+  }
+
+  if (!checkTeamValidity()) {
+    return;
+  }
+
   var lastAction = false;
 
   socket.on('disconnect', function() {
+    if (!checkTeamValidity()) {
+      return;
+    }
+      
     if (lastAction != false) {
       votes[team][lastAction]--;
     }
   });
 
   socket.on('control', function(value) {
+    if (!checkTeamValidity()) {
+      return;
+    }
+
     if (lastAction != false) {
       votes[team][lastAction]--;
     }
