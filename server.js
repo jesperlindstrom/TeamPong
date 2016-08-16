@@ -9,17 +9,7 @@ server.listen(port, function() {
   console.log('http listening on ' + port);
 });
 
-app.get('/reset', function(req, res) {
-  res.send('ok');
-  io.emit('reset');
-  gameSocket = false;
-});
-
-app.get('/togglePause', function(req, res) {
-  res.send('ok');
-  gameSocket.emit('togglePause');
-});
-
+var gameSockets = [];
 var votes = [
 {
   up: 0,
@@ -33,12 +23,29 @@ var votes = [
 }
 ];
 
+app.get('/reset', function(req, res) {
+  res.send('ok');
+  io.emit('reset');
+  gameSockets = [];
+});
+
+function emitAll(sockets, k, v) {
+  sockets.forEach(function(socket) {
+    socket.emit(k, v);
+  });
+}
+
+app.get('/togglePause', function(req, res) {
+  res.send('ok');
+  emitAll(gameSockets, 'togglePause');
+});
+
 setInterval(function() {
-  if (gameSocket) {
-    gameSocket.emit('tick', [
+  if (gameSockets.length) {
+    emitAll(gameSockets, 'tick', [
       votes[0],
       votes[1]
-      ]);
+    ]);
   }
 }, 100);
 
@@ -52,21 +59,15 @@ io.on('connection', function(socket){
   })
 });
 
-var gameSocket;
-
 function handleGame(socket) {
-  if (gameSocket) {
-    console.log('game tried to connect, but already existent. Denying new game.');
-    socket.disconnect()
-  }
-
   console.log('game connected');
 
-  gameSocket = socket;
+  gameSockets.push(socket);
 
   socket.on('disconnect', function() {
     console.log('game disconnected');
-    gameSocket = false;
+    var index = gameSockets.indexOf(socket);
+    gameSockets.splice(index, 1);
   });
 }
 
